@@ -310,26 +310,32 @@ The core architecture model of **CryptoCardBridge** relies on Just-in-Time (JIT)
 
 ```mermaid
 graph TD
-    autonumber
-    participant Merchant as Merchant POS Terminal
-    participant Gateway as Bridge Payment Gateway Engine
-    participant Chain as Solana High-Speed Ledger Node
-    participant Hook as Compliance Hook Validator
+    %% Define System Components
+    Terminal[Merchant POS Terminal]
+    Gateway[Bridge Payment Gateway Engine]
+    Chain[Solana High-Speed Ledger Node]
+    Hook[Compliance Hook Validator]
 
-    Merchant->>Gateway: Swipe Action: Authorize EUR Transaction (ISO 8583)
-    Gateway->>Gateway: Run Credit Validation / Collateral Margin Checks
-    Gateway->>Chain: Send Atomic JIT Bundle: Unlock Liquidity + Trigger Token Transfer
-    Note over Chain, Hook: [Atomic Transaction Context Start]
-    Chain->>Chain: Sub-tx 1: Credit Token Balance into User Account
-    Chain->>Chain: Sub-tx 2: TransferChecked from User to Platform Pool
-    Chain->>Hook: Intercept & Issue CPI to Transfer Hook Execute
-    Hook->>Hook: Run Zero-Copy Compliance Validation Loop
-    Hook-->>Chain: Validation Clear: Return Ok
-    Note over Chain, Hook: [Atomic Transaction Context Commit]
-    Chain-->>Gateway: Transaction Confirmed & Finalized On-Chain
-    Gateway-->>Merchant: Send Authorization Accept Signal (Sub-200ms Complete)
+    %% External System Interactions
+    Terminal -->|1. Swipe Action: Authorize EUR Transaction ISO 8583| Gateway
+    Gateway -->|2. Run Credit Validation & Collateral Margin Checks| Gateway
+    Gateway -->|3. Send Atomic JIT Bundle: Unlock Liquidity + Trigger Token Transfer| Chain
 
- end
+    %% On-Chain Execution Context
+    subgraph Solana Atomic Block Context
+        Chain -->|4a. Sub-tx 1: Credit Token Balance into User Account| Chain
+        Chain -->|4b. Sub-tx 2: TransferChecked from User to Platform Pool| Chain
+        Chain -->|5. Intercept & Issue CPI to Transfer Hook Execute| Hook
+        Hook -->|6. Run Zero-Copy Compliance Validation Loop| Hook
+        Hook -->|7. Validation Clear: Return Ok| Chain
+    end
+
+    %% Network Settlement Completion
+    Chain -->|8. Transaction Confirmed & Finalized On-Chain| Gateway
+    Gateway -->|9. Send Authorization Accept Signal Sub-200ms Complete| Terminal
+
+    %% Theme Customization
+    style Solana Atomic Block Context fill:#1c1c24,stroke:#512da8,stroke-width:2px
 
 ```
 
@@ -965,8 +971,7 @@ During close-range physical card reader taps, data moves through an ISO/IEC 7816
 
 $$\text{JIT Ticket} = \{\text{WalletPubKey}, \text{Nonce}, \text{MaxAllowedAmount}, \text{Timestamp}\}_{\text{SessionKey}}$$
 
-```mermaid
-graph TD
+sequenceDiagram
     autonumber
     participant Terminal as Merchant POS Terminal Reader
     participant Phone as Cardholder Mobile HCE App PWA
@@ -985,8 +990,6 @@ graph TD
     Chain-->>Relayer: Confirm Transaction Ingestion and Settlement Status Receipt
     Relayer-->>Terminal: Return Execution Success Authorization Confirm Code
     Terminal->>Phone: Emit Physical Completion Signal Audio Feedback Loop Tone via NFC Field
-
-```
 
 ---
 
