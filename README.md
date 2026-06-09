@@ -59,9 +59,9 @@ This approach drops memory copying overhead to zero and minimizes the compute fo
 
 ### 1.3 Interface Discriminator Overriding
 
-Standard Anchor applications route instructions using an 8-byte discriminator prefixed to the data payload. This value is computed as the first 8 bytes of the SHA-256 hash of the method name within the global 
+Standard Anchor applications route instructions using an 8-byte discriminator prefixed to the data payload. This value is computed as the first 8 bytes of the SHA-256 hash of the method name within the global namespacing:
 
-$$\text{Anchor Discriminator} = \text{SHA-256}(\text{"global:instruction\_name"})[0..8]$$
+$$\text{Interface Discriminator} = \text{SHA-256}(\text{"spl-transfer-hook-interface:execute"})[0..8]$$
 
 However, when the Token-2022 program invokes a Transfer Hook, it bypasses Anchor's routing logic. It strictly implements the open-source industry standard `spl-transfer-hook-interface`, which mandates an immutable 8-byte instruction discriminator calculated as:
 
