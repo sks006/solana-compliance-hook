@@ -962,7 +962,7 @@ During close-range physical card reader taps, data moves through an ISO/IEC 7816
 
 $$\text{JIT Ticket} = \{\text{WalletPubKey}, \text{Nonce}, \text{MaxAllowedAmount}, \text{Timestamp}\}_{\text{SessionKey}}$$
 
-```mermaid
+```
 sequenceDiagram
     autonumber
     participant Terminal as Merchant POS Terminal Reader
@@ -976,7 +976,7 @@ sequenceDiagram
     Phone->>Phone: Generate Encrypted Single-Use Transaction Ticket Bundle
     Phone-->>Terminal: Emit Serialized APDU Payload Data Stream over Radio Channel
     Terminal->>Relayer: Relay Signed Ticket Packet Data Matrix via Secure HTTPS Connection
-    Relayer->>Relayer: Decrypt Contextual Nonce; Validate Signature Elements Against Anti-Fraud Models
+    Relayer->>Relayer: Decrypt Contextual Nonce, Validate Signature Elements Against Anti-Fraud Models
     Relayer->>Chain: Construct and Broadcast Atomic JIT Transaction (Unlock Liquidity + TransferChecked)
     Chain->>Chain: Execute Balance Moves + Call Transfer Hook Verification Loops Synchronously
     Chain-->>Relayer: Confirm Transaction Ingestion and Settlement Status Receipt
