@@ -1,0 +1,30 @@
+[toolchain]
+anchor_version = "0.32.1"
+solana_version = "3.1.5"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+solana_compliance_hook = "9NCPBKj3Xe6WbckqF4m9iEmNcEHeZRcU51Lag3hSztmW"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "npx ts-mocha -p ./tsconfig.json -t 1000000 \"tests/**/*.ts\""
+
+[test]
+startup_wait = 5000
+shutdown_wait = 2000
+upgradeable = false
+
+[test.validator]
+bind_address = "127.0.0.1"
+ledger = ".anchor/test-ledger"
+rpc_port = 8899
