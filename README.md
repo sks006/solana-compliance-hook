@@ -307,8 +307,9 @@ The core architecture model of **CryptoCardBridge** relies on Just-in-Time (JIT)
 4. **Synchronous Compliance Check Execution:** As Step B fires, Token-2022 halts internal balances mutation and issues a CPI into our Compliance Transfer Hook. The hook evaluates the active compliance modes, verifying sanction matrices and allowlist constraints in real-time.
 5. **Atomic Settlement & Clear Signal:** If the hook signals validation clear, the transaction writes to ledger and commits state. The backend instantly delivers an authorization confirmation signal back to the card acquisition system terminal loop under a sub-200ms roundtrip window.
 
-```
-sequenceDiagram
+
+```mermaid
+graph TD
     autonumber
     participant Merchant as Merchant POS Terminal
     participant Gateway as Bridge Payment Gateway Engine
@@ -327,6 +328,8 @@ sequenceDiagram
     Note over Chain, Hook: [Atomic Transaction Context Commit]
     Chain-->>Gateway: Transaction Confirmed & Finalized On-Chain
     Gateway-->>Merchant: Send Authorization Accept Signal (Sub-200ms Complete)
+
+ end
 
 ```
 
@@ -962,8 +965,8 @@ During close-range physical card reader taps, data moves through an ISO/IEC 7816
 
 $$\text{JIT Ticket} = \{\text{WalletPubKey}, \text{Nonce}, \text{MaxAllowedAmount}, \text{Timestamp}\}_{\text{SessionKey}}$$
 
-```
-sequenceDiagram
+```mermaid
+graph TD
     autonumber
     participant Terminal as Merchant POS Terminal Reader
     participant Phone as Cardholder Mobile HCE App PWA
