@@ -59,7 +59,7 @@ This approach drops memory copying overhead to zero and minimizes the compute fo
 
 ### 1.3 Interface Discriminator Overriding
 
-Standard Anchor applications route instructions using an 8-byte discriminator prefixed to the data payload. This value is computed as the first 8 bytes of the SHA-256 hash of the method name within the global namespace:
+Standard Anchor applications route instructions using an 8-byte discriminator prefixed to the data payload. This value is computed as the first 8 bytes of the SHA-256 hash of the method name within the global 
 
 $$\text{Anchor Discriminator} = \text{SHA-256}(\text{"global:instruction\_name"})[0..8]$$
 
