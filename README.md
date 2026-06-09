@@ -307,7 +307,7 @@ The core architecture model of **CryptoCardBridge** relies on Just-in-Time (JIT)
 4. **Synchronous Compliance Check Execution:** As Step B fires, Token-2022 halts internal balances mutation and issues a CPI into our Compliance Transfer Hook. The hook evaluates the active compliance modes, verifying sanction matrices and allowlist constraints in real-time.
 5. **Atomic Settlement & Clear Signal:** If the hook signals validation clear, the transaction writes to ledger and commits state. The backend instantly delivers an authorization confirmation signal back to the card acquisition system terminal loop under a sub-200ms roundtrip window.
 
-```mermaid
+```
 sequenceDiagram
     autonumber
     participant Merchant as Merchant POS Terminal
@@ -318,15 +318,15 @@ sequenceDiagram
     Merchant->>Gateway: Swipe Action: Authorize EUR Transaction (ISO 8583)
     Gateway->>Gateway: Run Credit Validation / Collateral Margin Checks
     Gateway->>Chain: Send Atomic JIT Bundle: Unlock Liquidity + Trigger Token Transfer
-    subgraph Blockchain Atomic Transaction Context
-        Chain->>Chain: Sub-transaction 1: Credit Token Balance into User Account
-        Chain->>Chain: Sub-transaction 2: Transfer Checked from User to Platform Pool
-        Chain->>Hook: Intercept and CPI to Transfer Hook Execute
-        Hook->>Hook: Evaluate Mode Criteria (KYC / Sanctions / Fees)
-        Hook-->>Chain: Validation Clear: Return Ok
-    end
+    Note over Chain, Hook: [Atomic Transaction Context Start]
+    Chain->>Chain: Sub-tx 1: Credit Token Balance into User Account
+    Chain->>Chain: Sub-tx 2: TransferChecked from User to Platform Pool
+    Chain->>Hook: Intercept & Issue CPI to Transfer Hook Execute
+    Hook->>Hook: Run Zero-Copy Compliance Validation Loop
+    Hook-->>Chain: Validation Clear: Return Ok
+    Note over Chain, Hook: [Atomic Transaction Context Commit]
     Chain-->>Gateway: Transaction Confirmed & Finalized On-Chain
-    Gateway-->>Merchant: Send Authorization Accept Signal (Sub-200ms Protocol Complete)
+    Gateway-->>Merchant: Send Authorization Accept Signal (Sub-200ms Complete)
 
 ```
 
