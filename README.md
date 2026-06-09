@@ -971,25 +971,39 @@ During close-range physical card reader taps, data moves through an ISO/IEC 7816
 
 $$\text{JIT Ticket} = \{\text{WalletPubKey}, \text{Nonce}, \text{MaxAllowedAmount}, \text{Timestamp}\}_{\text{SessionKey}}$$
 
-sequenceDiagram
-    autonumber
-    participant Terminal as Merchant POS Terminal Reader
-    participant Phone as Cardholder Mobile HCE App PWA
-    participant Relayer as Non-Custodial Infrastructure API Gateway
-    participant Chain as Solana Node Validation Pipeline
+```mermaid
+graph TD
+    %% Define System Components
+    Terminal[Merchant POS Terminal Reader]
+    Phone[Cardholder Mobile HCE App PWA]
+    Relayer[Non-Custodial Infrastructure API Gateway]
+    Chain[Solana Node Validation Pipeline]
 
-    Terminal->>Phone: Transmit Selection Beacon APDU (AID: 2PAY)
-    Phone-->>Terminal: Return Handshake Acknowledgement + Device Public Reference Key
-    Terminal->>Phone: Request Secure Payment Ticket (Contextual Amount Challenge)
-    Phone->>Phone: Generate Encrypted Single-Use Transaction Ticket Bundle
-    Phone-->>Terminal: Emit Serialized APDU Payload Data Stream over Radio Channel
-    Terminal->>Relayer: Relay Signed Ticket Packet Data Matrix via Secure HTTPS Connection
-    Relayer->>Relayer: Decrypt Contextual Nonce, Validate Signature Elements Against Anti-Fraud Models
-    Relayer->>Chain: Construct and Broadcast Atomic JIT Transaction (Unlock Liquidity + TransferChecked)
-    Chain->>Chain: Execute Balance Moves + Call Transfer Hook Verification Loops Synchronously
-    Chain-->>Relayer: Confirm Transaction Ingestion and Settlement Status Receipt
-    Relayer-->>Terminal: Return Execution Success Authorization Confirm Code
-    Terminal->>Phone: Emit Physical Completion Signal Audio Feedback Loop Tone via NFC Field
+    %% Hardware Edge Interaction Loop
+    Terminal -->|1. Transmit Selection Beacon APDU AID: 2PAY| Phone
+    Phone -->|2. Return Handshake Acknowledgement + Device Public Reference Key| Terminal
+    Terminal -->|3. Request Secure Payment Ticket Contextual Amount Challenge| Phone
+    Phone -->|4. Generate Encrypted Single-Use Transaction Ticket Bundle| Phone
+    Phone -->|5. Emit Serialized APDU Payload Data Stream over Radio Channel| Terminal
+
+    %% Infrastructure Ingestion
+    Terminal -->|6. Relay Signed Ticket Packet Data Matrix via Secure HTTPS Connection| Relayer
+    Relayer -->|7. Decrypt Contextual Nonce, Validate Signature Elements Against Anti-Fraud Models| Relayer
+    Relayer -->|8. Construct and Broadcast Atomic JIT Transaction Unlock Liquidity + TransferChecked| Chain
+
+    %% On-Chain Execution Engine
+    subgraph Solana Runtime Pipeline
+        Chain -->|9. Execute Balance Moves + Call Transfer Hook Verification Loops Synchronously| Chain
+    end
+
+    %% Asynchronous Callback & Confirmation
+    Chain -->|10. Confirm Transaction Ingestion and Settlement Status Receipt| Relayer
+    Relayer -->|11. Return Execution Success Authorization Confirm Code| Terminal
+    Terminal -->|12. Emit Physical Completion Signal Audio Feedback Loop Tone via NFC Field| Phone
+
+    %% Structural Style Mapping
+    style Solana Runtime Pipeline fill:#1c1c24,stroke:#512da8,stroke-width:2px
+```
 
 ---
 
