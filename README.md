@@ -1,6 +1,4 @@
-# COMPREHENSIVE INDUSTRIAL ARCHITECTURAL SPECIFICATION: CryptoCardBridge
-
-## MiCA-Compliant, Just-In-Time (JIT) Funded Debit/Credit Transfer Hook Engine
+# MiCA-Compliant, Just-In-Time (JIT) Funded Debit/Credit Transfer Hook Engine
 
 **Target Run-Time:** Solana SBF VM | `spl-token-2022` (v8.0.1) | Anchor Framework (v0.32.1)
 
