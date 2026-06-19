@@ -59,6 +59,7 @@ pub fn handler<'info>(ctx: Context<'_, '_, 'info, 'info, ExecuteTransfer<'info>>
                 ComplianceError::NotAllowlisted
             );
         }
+        
         ComplianceMode::BlackList => {
             let compliance_account: Account<ComplianceList> = Account::try_from(list_info)?;
             let source_owner = ctx.accounts.source_account.owner;

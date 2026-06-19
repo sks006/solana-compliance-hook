@@ -3,6 +3,7 @@
 ## CryptoCardBridge: MiCA-Compliant, JIT-Funded Debit/Credit Transfer Hook Architecture
 
 **Author:** Principal Engineer & Technical Lead
+**Program Id:** g5SDWNXshJzY9HdkAxZga4VUToM3vQzJoGo1PpS3pVb
 
 **Target Architecture:** Solana SBF VM, Token-2022 (`spl-token-2022`), Anchor Framework `v0.32.1`
 
@@ -762,3 +763,21 @@ Deploying a compliance validation program to the Solana mainnet requires rigorou
 ## 8. INTEGRATION TRACE SUMMARY
 
 The `CryptoCardBridge` compliance hook engine combines efficiency with structural defense. By managing memory allocations carefully, implementing fallback routing, and enforcing cryptographic account pinning, the architecture satisfies complex MiCA compliance constraints while meeting the strict runtime requirements of the Solana network. Use this technical specification as your architectural reference when building, auditing, or extending your compliance transfer hook components.
+
+
+
+
+[ Entry: User initiates spl-token-2022 transferChecked ]
+                     │
+                     ▼
+[ Runtime intercepts transfer -> Executes Program Hook via CPI ]
+                     │
+                     ▼
+[ Transformation Phase: Fetch remaining_accounts ]
+  ├── 1. Read ComplianceConfig -> Validate Mode == ComplianceMode::Blacklist
+  └── 2. Read ComplianceList   -> Load block_list Vector into Memory
+                     │
+                     ▼
+[ Invariant Check: Is Destination Owner OR Source Owner inside block_list? ]
+       ├── YES ──► [ Exit: Panic & Revert Transaction (Custom Error: SanctionedAddress) ]
+       └── NO  ──► [ Exit: Return Ok(()) -> Allow Transfer to Finalize Ledger State ]
